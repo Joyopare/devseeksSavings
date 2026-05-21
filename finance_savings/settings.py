@@ -1,7 +1,7 @@
 
 from pathlib import Path
 import os
-from decouple import config, Csv
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,27 +17,12 @@ SECRET_KEY = config(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG =True
 
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS',
-    cast=Csv(),
-)
+ALLOWED_HOSTS = ['.vercel.app' ,'127.0.0.1']
 
-ENVIRONMENT = config('ENVIRONMENT', default='development')
 
-# Only enforce HTTPS/HSTS in explicit production mode. This avoids breaking local dev
-# when DEBUG is accidentally set False (common when env vars persist between shells).
-if ENVIRONMENT == 'production':
-    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
-    SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)
-    CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
 
-    SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int)
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True, cast=bool)
-    SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', default=True, cast=bool)
-else:
-    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
 
 
 # Application definition
@@ -90,12 +75,12 @@ WSGI_APPLICATION = 'finance_savings.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='devseeks_savings'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': config('PNAME'),
+    'USER': config('PUSER'),
+    'PASSWORD': config('PPASS'),
+    'HOST': config('PHOST'),
+    'PORT': config('PPORT'),
     }
 }
 
