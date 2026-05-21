@@ -1,0 +1,169 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <!-- Main background gradient -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Card gradient -->
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gold gradient -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Accent gradient -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Shadow effect -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    
+    <!-- Text shadow -->
+    <filter id="textShadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative background elements -->
+  <g opacity="0.1">
+    <circle cx="200" cy="150" r="120" fill="url(#goldGradient)"/>
+    <circle cx="1000" cy="650" r="80" fill="url(#accentGradient)"/>
+    <circle cx="150" cy="700" r="60" fill="url(#goldGradient)"/>
+    <circle cx="1050" cy="200" r="100" fill="url(#accentGradient)"/>
+  </g>
+  
+  <!-- Grid pattern -->
+  <g opacity="0.05">
+    <line x1="0" y1="200" x2="1200" y2="200" stroke="url(#goldGradient)" stroke-width="1"/>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke="url(#goldGradient)" stroke-width="1"/>
+    <line x1="0" y1="600" x2="1200" y2="600" stroke="url(#goldGradient)" stroke-width="1"/>
+  </g>
+  
+  <!-- Main content card -->
+  <rect x="100" y="100" width="1000" height="600" rx="30" fill="url(#cardGradient)" filter="url(#shadow)"/>
+  
+  <!-- Header section with gradient -->
+  <rect x="100" y="100" width="1000" height="150" rx="30" fill="url(#goldGradient)" opacity="0.15"/>
+  
+  <!-- Company Logo Section -->
+  <g transform="translate(600, 175)">
+    <!-- Logo background with enhanced design -->
+    <circle cx="0" cy="0" r="45" fill="url(#goldGradient)" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="40" fill="#0f172a"/>
+    
+    <!-- Enhanced logo text -->
+    <text x="0" y="8" font-family="Arial Black, sans-serif" font-size="18" font-weight="900" text-anchor="middle" fill="url(#goldGradient)" filter="url(#textShadow)">
+      <tspan font-size="20" font-weight="900">dev</tspan>
+      <tspan font-size="16" font-weight="700" dx="-3">seeks</tspan>
+    </text>
+    
+    <!-- Tagline -->
+    <text x="0" y="-60" font-family="Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="url(#goldGradient)" letter-spacing="2">
+      FINANCE SAVINGS
+    </text>
+  </g>
+  
+  <!-- Main Title with enhanced styling -->
+  <text x="600" y="290" font-family="Arial Black, sans-serif" font-size="56" font-weight="900" text-anchor="middle" fill="#ffffff" filter="url(#glow)">
+    Smart Finance
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="330" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="url(#goldGradient)" font-weight="600">
+    Your Gateway to Financial Freedom
+  </text>
+  
+  <!-- Enhanced divider -->
+  <rect x="250" y="360" width="700" height="3" fill="url(#goldGradient)" opacity="0.3"/>
+  
+  <!-- Features Grid -->
+  <g transform="translate(0, 400)">
+    <!-- Feature 1: Smart Savings -->
+    <g transform="translate(200, 0)">
+      <rect x="-80" y="-40" width="160" height="120" rx="15" fill="url(#accentGradient)" opacity="0.1"/>
+      <circle cx="0" cy="0" r="35" fill="url(#accentGradient)" opacity="0.2"/>
+      <text x="0" y="8" font-family="Arial, sans-serif" font-size="28" text-anchor="middle" fill="url(#accentGradient)">🎯</text>
+      <text x="0" y="70" font-family="Arial Black, sans-serif" font-size="22" font-weight="bold" text-anchor="middle" fill="#ffffff">
+        Smart Goals
+      </text>
+      <text x="0" y="95" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="url(#goldGradient)">
+        AI-Powered Planning
+      </text>
+    </g>
+    
+    <!-- Feature 2: Secure Banking -->
+    <g transform="translate(600, 0)">
+      <rect x="-80" y="-40" width="160" height="120" rx="15" fill="url(#accentGradient)" opacity="0.1"/>
+      <circle cx="0" cy="0" r="35" fill="url(#accentGradient)" opacity="0.2"/>
+      <text x="0" y="8" font-family="Arial, sans-serif" font-size="28" text-anchor="middle" fill="url(#accentGradient)">�</text>
+      <text x="0" y="70" font-family="Arial Black, sans-serif" font-size="22" font-weight="bold" text-anchor="middle" fill="#ffffff">
+        Bank Security
+      </text>
+      <text x="0" y="95" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="url(#goldGradient)">
+        Enterprise-Level Protection
+      </text>
+    </g>
+  </g>
+  
+  <!-- Stats Section -->
+  <g transform="translate(0, 540)">
+    <rect x="150" y="-30" width="900" height="80" rx="15" fill="url(#goldGradient)" opacity="0.1"/>
+    
+    <!-- Stat 1 -->
+    <g transform="translate(250, 10)">
+      <text x="0" y="0" font-family="Arial Black, sans-serif" font-size="32" font-weight="900" text-anchor="middle" fill="url(#goldGradient)">
+        50K+
+      </text>
+      <text x="0" y="25" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#ffffff">
+        Active Users
+      </text>
+    </g>
+    
+    <!-- Stat 2 -->
+    <g transform="translate(600, 10)">
+      <text x="0" y="0" font-family="Arial Black, sans-serif" font-size="32" font-weight="900" text-anchor="middle" fill="url(#goldGradient)">
+        $2M+
+      </text>
+      <text x="0" y="25" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#ffffff">
+        Saved Total
+      </text>
+    </g>
+  </g>
+  
+  <!-- Enhanced CTA Section -->
+  <g transform="translate(0, 640)">
+    <rect x="400" y="0" width="400" height="60" rx="30" fill="url(#goldGradient)" filter="url(#glow)"/>
+    <text x="600" y="25" font-family="Arial Black, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#0f172a">
+      Start Your Journey Today
+    </text>
+    <text x="600" y="45" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#0f172a">
+      Join 50,000+ Satisfied Users
+    </text>
+  </g>
+</svg>

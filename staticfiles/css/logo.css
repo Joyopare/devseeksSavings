@@ -1,0 +1,199 @@
+/* Professional Logo Styles for devseeks */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* Modern Logo Design */
+.dev-logo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.dev-logo:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4);
+    background: linear-gradient(135deg, #2a5298 0%, #7e22ce 50%, #1e3c72 100%);
+}
+
+.dev-logo::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ffd700, #ff6b6b, #4ecdc4, #45b7d1, #ffd700);
+    border-radius: 12px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background-size: 400% 400%;
+    animation: gradientShift 3s ease infinite;
+}
+
+.dev-logo:hover::before {
+    opacity: 0.7;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.dev-logo .dev {
+    color: #ffd700;
+    font-weight: 900;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.dev-logo .seeks {
+    color: #ffffff;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Finance Savings Brand Text */
+.brand-text {
+    color: #ffffff;
+    font-weight: 300;
+    font-size: 1.1rem;
+    letter-spacing: 0.3px;
+    opacity: 0.9;
+}
+
+/* Icon-based logo alternative */
+.icon-logo {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    margin-right: 12px;
+    box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-logo::before {
+    content: 'DS';
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.icon-logo::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+}
+
+.icon-logo:hover::after {
+    animation: shine 0.6s ease;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* Minimalist logo option */
+.minimal-logo {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 300;
+    font-size: 1.3rem;
+    color: #ffffff;
+    text-decoration: none;
+    border-left: 3px solid #7e22ce;
+    padding-left: 12px;
+    margin-left: 8px;
+    transition: all 0.3s ease;
+}
+
+.minimal-logo:hover {
+    color: #7e22ce;
+    border-left-color: #ffd700;
+    transform: translateX(3px);
+}
+
+.minimal-logo .dev {
+    font-weight: 700;
+    color: #7e22ce;
+}
+
+.minimal-logo .seeks {
+    font-weight: 400;
+    color: #2a5298;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .dev-logo {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .brand-text {
+        font-size: 0.9rem;
+    }
+    
+    .icon-logo {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.1rem;
+        gap: 8px;
+    }
+    
+    .dev-logo {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .brand-text {
+        display: none; /* Hide text on very small screens */
+    }
+}
