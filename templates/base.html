@@ -1,0 +1,377 @@
+{% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}devseeks Savings{% endblock %}</title>
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/colors.css' %}">
+    <link rel="stylesheet" href="{% static 'css/logo.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dropdown-fix.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal-fix.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin-approval.css' %}">
+    <style>
+        .balance-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+        .transaction-positive {
+            color: var(--accent-primary);
+        }
+        .transaction-negative {
+            color: var(--danger);
+        }
+        .progress {
+            height: 25px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <span class="dev-logo">
+                    <span class="dev">dev</span><span class="seeks">seeks</span>
+                </span>
+                <span class="brand-text">Savings</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_authenticated %}
+                    <ul class="navbar-nav me-auto">
+                        {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                                <i class="fas fa-cog me-1"></i> Admin
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_management' %}">
+                                <i class="fas fa-users me-1"></i> Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'transaction_requests' %}">
+                                <i class="fas fa-clipboard-list me-1"></i> Request List
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">
+                                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        {% if not user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'request_transaction' %}">
+                                <i class="fas fa-hand-holding-money me-1"></i> Request
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'deposit' %}">
+                                <i class="fas fa-plus-circle me-1"></i> Deposit
+                            </a>
+                        </li>
+                    
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'withdraw' %}">
+                                <i class="fas fa-minus-circle me-1"></i> Withdraw
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'goal_management' %}">
+                                <i class="fas fa-bullseye me-1"></i> Goals
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin_notifications' %}">
+                                <i class="fas fa-bell me-1"></i> Notifications
+                                {% if unread_notifications > 0 %}
+                                    <span class="badge bg-danger ms-1">{{ unread_notifications }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if not user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'set_savings_goal' %}">
+                                <i class="fas fa-bullseye me-1"></i> Set Goal
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'transaction_history' %}">
+                                <i class="fas fa-history me-1"></i> History
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'inbox' %}">
+                                <i class="fas fa-envelope me-1"></i> Messages
+                                {% if unread_messages > 0 %}
+                                    <span class="badge bg-danger ms-1">{{ unread_messages }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% if not user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_notifications' %}">
+                                <i class="fas fa-bell me-1"></i> Notifications
+                                {% if unread_user_notifications > 0 %}
+                                    <span class="badge bg-warning ms-1">{{ unread_user_notifications }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-2 ms-auto">
+                        <button type="button" class="btn btn-sm btn-outline-light" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                {% else %}
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link btn-outline-secondary me-2 px-3 rounded" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-accent px-3 rounded" href="{% url 'signup' %}">
+                                <i class="fas fa-user-plus me-1"></i> Sign Up
+                            </a>
+                        </li>
+                        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                            <button type="button" class="btn btn-sm btn-outline-light" id="themeToggle" aria-label="Toggle theme">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="toast align-items-center text-bg-{% if message.tags %}{{ message.tags }}{% else %}secondary{% endif %} border-0 mb-2"
+                         role="status" aria-live="polite" aria-atomic="true"
+                         data-autohide="true" data-delay="5000">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                {{ message }}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer position-relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5">
+            <div class="pattern-bg"></div>
+        </div>
+        
+        <div class="container position-relative z-1 py-5">
+            <div class="row g-4">
+                <!-- Company Info -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-section">
+                        <div class="text-center mb-4">
+                            <div class="footer-logo-wrapper">
+                                <span class="footer-dev-logo">
+                                    <span class="dev">dev</span>
+                                    <span class="seeks">seeks</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="footer-brand-info text-center">
+                            <h5>Finance Savings</h5>
+                            <small>Trusted Since 2024</small>
+                        </div>
+                        <p class="text-white-50 mb-4">Your trusted partner in financial growth and savings management. We help you achieve your financial goals with smart tools and expert guidance.</p>
+                        
+                        <!-- Social Media -->
+                        <div class="social-wrapper">
+                            <h6 class="text-white mb-3">Follow Us</h6>
+                            <div class="d-flex gap-2">
+                                <a href="https://facebook.com" target="_blank" class="social-icon facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="https://twitter.com" target="_blank" class="social-icon twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="https://linkedin.com" target="_blank" class="social-icon linkedin">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://instagram.com" target="_blank" class="social-icon instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://youtube.com" target="_blank" class="social-icon youtube">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                                <a href="https://tiktok.com" target="_blank" class="social-icon tiktok">
+                                    <i class="fab fa-tiktok"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-section">
+                        <h6 class="footer-title">Quick Links</h6>
+                        <ul class="footer-links">
+                            <li><a href="{% url 'home' %}" class="footer-link"><i class="fas fa-home me-2"></i>Home</a></li>
+                            <li><a href="{% url 'dashboard' %}" class="footer-link"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a href="{% url 'deposit' %}" class="footer-link"><i class="fas fa-plus-circle me-2"></i>Deposit</a></li>
+                            <li><a href="{% url 'withdraw' %}" class="footer-link"><i class="fas fa-minus-circle me-2"></i>Withdraw</a></li>
+                            <li><a href="{% url 'set_savings_goal' %}" class="footer-link"><i class="fas fa-bullseye me-2"></i>Savings Goals</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-section">
+                        <h6 class="footer-title">Get In Touch</h6>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <strong>Address</strong>
+                                    <p class="mb-0 text-light-50"> Obogu, Ashanti Akim South</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <strong>Phone</strong>
+                                    <p class="mb-0 text-light-50">+233 532 975 333</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <strong>Email</strong>
+                                    <p class="mb-0 text-light-50">support@devseeks.com</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <strong>Business Hours</strong>
+                                    <p class="mb-0 text-light-50">Mon-Fri: 8AM-4PM GMT</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About & Newsletter -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-section">
+                        <h6 class="footer-title">About devseeks</h6>
+                        <p class="text-white-50 mb-4">Founded in 2024, devseeks Savings is committed to providing innovative financial solutions that empower individuals to take control of their financial future.</p>
+                        
+                        <!-- Features -->
+                        <div class="features-list mb-4">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt text-success me-2 "></i>
+                                <span>Secure & Reliable</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-headset text-success me-2 "></i>
+                                <span>24/7 Support</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-mobile-alt text-success me-2"></i>
+                                <span>Easy to Use</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-dollar-sign text-success me-2"></i>
+                                <span>No Hidden Fees</span>
+                            </div>
+                        </div>
+
+                        <!-- Newsletter -->
+                        <div class="newsletter">
+                            <h6 class="text-white mb-3">Stay Updated</h6>
+                            <form class="newsletter-form">
+                                <div class="input-group">
+                                    <input type="email" class="form-control" placeholder="Your email">
+                                    <button class="btn btn-warning" type="submit">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="row mt-5 pt-4 border-top border-secondary">
+                <div class="col-md-6">
+                    <p class="text-white small mb-0">
+                        <i class="fas fa-copyright me-1"></i> 2024 devseeks Savings. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-legal">
+                        <a href="#" class="footer-legal-link">Privacy Policy</a>
+                        <a href="#" class="footer-legal-link">Terms of Service</a>
+                        <a href="#" class="footer-legal-link">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="footer-decoration footer-decoration-1"></div>
+        <div class="footer-decoration footer-decoration-2"></div>
+    </footer>
+
+    <button type="button" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    {% bootstrap_javascript %}
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

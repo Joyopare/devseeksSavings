@@ -1,0 +1,84 @@
+/* ONE-CLICK APPROVAL FIX - Remove All Modal/Dialog Interference */
+
+/* Remove ALL modal-related CSS that could interfere with one-click approval */
+.modal,
+.modal-backdrop,
+.modal-content,
+.modal-header,
+.modal-body,
+.modal-footer,
+.modal-dialog,
+.modal.fade {
+    display: none !important;
+    visibility: hidden !important;
+    z-index: -9999 !important;
+}
+
+/* Remove ALL dialog-related CSS */
+.ui-dialog,
+.ui-widget-overlay,
+.swal2-container,
+.sweet-alert,
+.confirmation-dialog,
+.popup-dialog {
+    display: none !important;
+    visibility: hidden !important;
+    z-index: -9999 !important;
+}
+
+/* Remove ALL blur effects */
+.navbar,
+.dropdown-menu,
+.footer-section,
+.footer-section:hover {
+    backdrop-filter: none !important;
+}
+
+/* ENSURE FORM BUTTONS WORK PERFECTLY */
+form button[type="submit"] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    position: relative !important;
+    display: inline-block !important;
+    visibility: visible !important;
+}
+
+/* ENSURE FORMS WORK */
+form {
+    display: inline !important;
+    pointer-events: auto !important;
+    z-index: 9999 !important;
+    position: relative !important;
+}
+
+/* Remove any JavaScript confirm() styling interference */
+.ui-dialog,
+.ui-widget,
+.swal-overlay,
+.confirm {
+    display: none !important;
+}
+
+/* Override any conflicting styles */
+.modal.fade {
+    backdrop-filter: none !important;
+}
+
+.modal.show {
+    backdrop-filter: none !important;
+}
+
+/* Ensure body doesn't interfere */
+body {
+    backdrop-filter: none !important;
+}
+
+/* Fix any remaining z-index issues */
+main,
+.content,
+.container,
+.container-fluid {
+    position: relative;
+    z-index: 1;
+}

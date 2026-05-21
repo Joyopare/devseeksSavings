@@ -1,0 +1,95 @@
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>User</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Processed</th>
+                {% if status != 'processed' %}<th>Actions</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="user-avatar me-2">
+                            <i class="fas fa-user-circle fa-2x text-muted"></i>
+                        </div>
+                        <div>
+                            <strong>{{ req.user.get_full_name|default:req.user.username }}</strong>
+                            <br>
+                            <small class="text-muted">{{ req.user.email }}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge {% if req.request_type == 'DEPOSIT' %}bg-success{% else %}bg-danger{% endif %} fs-6">
+                        <i class="fas {% if req.request_type == 'DEPOSIT' %}fa-arrow-down{% else %}fa-arrow-up{% endif %} me-1"></i>
+                        {{ req.get_request_type_display }}
+                    </span>
+                </td>
+                <td class="fw-bold">GH₵{{ req.amount|floatformat:2 }}</td>
+                <td>{{ req.description|truncatechars:40|default:"-" }}</td>
+                <td>
+                    <span class="badge 
+                        {% if req.status == 'PENDING' %}bg-warning
+                        {% elif req.status == 'APPROVED' %}bg-info
+                        {% elif req.status == 'REJECTED' %}bg-danger
+                        {% elif req.status == 'PROCESSED' %}bg-success
+                        {% endif %}">
+                        {{ req.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    <small>{{ req.created_at|date:"M d, Y H:i" }}</small>
+                    <br>
+                    <small class="text-muted">{{ req.created_at|timesince }} ago</small>
+                </td>
+                <td>
+                    {% if req.processed_at %}
+                        <small>{{ req.processed_at|date:"M d, H:i" }}</small>
+                        <br>
+                        <small class="text-muted">{{ req.processed_at|timesince }} ago</small>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                {% if status != 'processed' %}
+                <td>
+                    {% if req.status == 'PENDING' %}
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-success" 
+                                    data-bs-toggle="modal" data-bs-target="#approveModal{{ req.id }}">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" 
+                                    data-bs-toggle="modal" data-bs-target="#rejectModal{{ req.id }}">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </div>
+                    {% else %}
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                data-bs-toggle="modal" data-bs-target="#detailsModal{{ req.id }}">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if not requests %}
+<div class="text-center py-5">
+    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+    <h5 class="text-muted">No {{ status }} requests found</h5>
+    <p class="text-muted">There are no {{ status }} transaction requests at this time.</p>
+</div>
+{% endif %}

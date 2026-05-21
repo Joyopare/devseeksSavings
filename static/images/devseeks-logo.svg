@@ -1,0 +1,20 @@
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background rectangle -->
+  <rect x="2" y="8" width="50" height="24" rx="6" fill="url(#logoGradient)" />
+  
+  <!-- dev text -->
+  <text x="8" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="800" fill="#ffd700">dev</text>
+  
+  <!-- seeks text -->
+  <text x="30" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#ffffff">seeks</text>
+  
+  <!-- Finance Savings text -->
+  <text x="58" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff">Finance Savings</text>
+</svg>

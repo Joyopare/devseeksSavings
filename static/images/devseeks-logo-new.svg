@@ -1,0 +1,78 @@
+<svg width="150" height="45" viewBox="0 0 150 45" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Professional gradient -->
+    <linearGradient id="proGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2a5298;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7e22ce;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Animated gradient border -->
+    <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:0.8" />
+      <stop offset="25%" style="stop-color:#ff6b6b;stop-opacity:0.6" />
+      <stop offset="50%" style="stop-color:#4ecdc4;stop-opacity:0.6" />
+      <stop offset="75%" style="stop-color:#45b7d1;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#ffd700;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="logoShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="4" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.3"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Main logo background with rounded corners -->
+  <rect x="4" y="10" width="65" height="25" rx="12" ry="12" 
+        fill="url(#proGradient)" 
+        filter="url(#logoShadow)" />
+  
+  <!-- Animated border (subtle) -->
+  <rect x="4" y="10" width="65" height="25" rx="12" ry="12" 
+        fill="none" 
+        stroke="url(#borderGradient)" 
+        stroke-width="2" 
+        opacity="0.6">
+    <animate attributeName="stroke-dasharray" 
+             values="0 200;200 0" 
+             dur="3s" 
+             repeatCount="indefinite" />
+  </rect>
+  
+  <!-- dev text with gold color -->
+  <text x="12" y="27" 
+        font-family="Arial, sans-serif" 
+        font-size="15" 
+        font-weight="900" 
+        fill="#ffd700" 
+        text-shadow="0 2px 4px rgba(0,0,0,0.3)">dev</text>
+  
+  <!-- seeks text with white color -->
+  <text x="38" y="27" 
+        font-family="Arial, sans-serif" 
+        font-size="15" 
+        font-weight="600" 
+        fill="#ffffff" 
+        text-shadow="0 2px 4px rgba(0,0,0,0.3)">seeks</text>
+  
+  <!-- Finance Savings text -->
+  <text x="75" y="27" 
+        font-family="Arial, sans-serif" 
+        font-size="14" 
+        font-weight="300" 
+        fill="#ffffff" 
+        opacity="0.9">Finance Savings</text>
+  
+  <!-- Subtle glow effect -->
+  <ellipse cx="36" cy="22" rx="35" ry="15" 
+           fill="url(#proGradient)" 
+           opacity="0.1" 
+           filter="url(#logoShadow)" />
+</svg>

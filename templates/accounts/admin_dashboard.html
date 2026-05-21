@@ -1,0 +1,765 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Finance Savings{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Admin Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <a href="{% url 'transaction_requests' %}" class="btn btn-sm btn-warning position-relative">
+                    <i class="fas fa-exchange-alt me-1"></i> Requests
+                    {% if pending_requests_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ pending_requests_count }}
+                        </span>
+                    {% endif %}
+                </a>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Alert -->
+    {% if pending_requests_count > 0 %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>{{ pending_requests_count }} pending transaction request(s)</strong> require your attention.
+        <a href="{% url 'transaction_requests' %}" class="alert-link">Process them now</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Users
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_users }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Transactions
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_transactions }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exchange-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Savings
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">GH₵{{ total_savings|floatformat:2 }}</div>
+                            <small class="text-muted">Total across {{ total_users }} users</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Requests
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_requests_count }}</div>
+                            <small class="text-muted">Awaiting approval</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Section -->
+    {% if pending_requests %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="m-0 fw-bold">
+                                <i class="fas fa-clock me-2"></i>
+                                Pending Requests
+                                <span class="badge bg-white text-primary ms-2">{{ pending_requests_count }}</span>
+                            </h5>
+                        </div>
+                        <a href="{% url 'transaction_requests' %}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-th-list me-1"></i> View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Modern Card-Based Layout -->
+                    <div class="row g-4">
+                        {% for req in pending_requests %}
+                        <div class="col-lg-6 col-xl-4">
+                            <div class="request-card h-100">
+                                <!-- Card Header -->
+                                <div class="request-card-header">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="request-avatar">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <div class="request-user-name">{{ req.user.get_full_name|default:req.user.username }}</div>
+                                                <div class="request-user-email">{{ req.user.email }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="request-type-badge">
+                                            {% if req.request_type == 'DEPOSIT' %}
+                                                <span class="badge bg-success bg-gradient">
+                                                    <i class="fas fa-arrow-down me-1"></i>Deposit
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger bg-gradient">
+                                                    <i class="fas fa-arrow-up me-1"></i>Withdrawal
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Card Body -->
+                                <div class="request-card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-6">
+                                            <div class="request-info-item">
+                                                <div class="request-label">Amount</div>
+                                                <div class="request-value text-success">GH₵{{ req.amount|floatformat:2 }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="request-info-item">
+                                                <div class="request-label">Current Balance</div>
+                                                <div class="request-value text-info">GH₵{{ req.user.userprofile.balance|default:0|floatformat:2 }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="request-info-item">
+                                        <div class="request-label">Description</div>
+                                        <div class="request-value text-muted">{{ req.description|default:"No description provided" }}</div>
+                                    </div>
+                                    
+                                    <div class="request-date">
+                                        <i class="fas fa-clock me-2 text-muted"></i>
+                                        <span class="text-muted">{{ req.created_at|date:"M d, Y H:i" }}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Card Footer -->
+                                <div class="request-card-footer">
+                                    <div class="d-flex gap-2">
+                                        <!-- Approve Button -->
+                                        <form method="post" action="{% url 'approve_request' req.id %}" class="flex-fill">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="admin_notes" value="Approved from admin dashboard">
+                                            <button type="submit" class="btn btn-success btn-sm w-100">
+                                                <i class="fas fa-check me-2"></i>Approve
+                                            </button>
+                                        </form>
+                                        
+                                        <!-- Reject Button -->
+                                        <form method="post" action="{% url 'reject_request' req.id %}" class="flex-fill">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="rejection_reason" value="Rejected from admin dashboard">
+                                            <button type="submit" class="btn btn-danger btn-sm w-100">
+                                                <i class="fas fa-times me-2"></i>Reject
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Empty State -->
+                    {% if pending_requests.count == 0 %}
+                    <div class="text-center py-5">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4 class="empty-state-title">All Caught Up!</h4>
+                        <p class="empty-state-description">No pending requests to process at this time.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- No Pending Requests -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle fa-4x text-success"></i>
+                    </div>
+                    <h5 class="text-success">All Caught Up!</h5>
+                    <p class="text-muted">No pending requests at the moment. You're all set!</p>
+                    <a href="{% url 'transaction_requests' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-history me-1"></i>View Transaction History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Analytics Dashboard -->
+    <div class="row mb-4">
+        <!-- Key Metrics Cards -->
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-users">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">{{ total_users }}</div>
+                            <div class="analytics-label">Total Users</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-balance">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">GH₵{{ total_balance|floatformat:2 }}</div>
+                            <div class="analytics-label">Total Balance Held</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-deposits">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">GH₵{{ monthly_deposits|floatformat:2 }}</div>
+                            <div class="analytics-label">Deposits This Month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-withdrawals">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">GH₵{{ monthly_withdrawals|floatformat:2 }}</div>
+                            <div class="analytics-label">Withdrawals This Month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row mb-4">
+        <!-- Deposits vs Withdrawals Bar Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card analytics-chart-card">
+                <div class="card-header analytics-chart-header">
+                    <h6 class="analytics-chart-title">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Deposits vs Withdrawals (Monthly)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="depositsWithdrawalsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Type Breakdown Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card analytics-chart-card">
+                <div class="card-header analytics-chart-header">
+                    <h6 class="analytics-chart-title">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Transaction Type Breakdown
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="transactionTypesChart"></canvas>
+                    </div>
+                    <div class="chart-legend mt-3">
+                        <div class="legend-item">
+                            <span class="legend-color legend-deposit"></span>
+                            <span class="legend-text">Deposits ({{ deposit_percentage }}%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color legend-withdrawal"></span>
+                            <span class="legend-text">Withdrawals ({{ withdrawal_percentage }}%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row mb-4">
+        <!-- Net Savings Trend Line Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card analytics-chart-card">
+                <div class="card-header analytics-chart-header">
+                    <h6 class="analytics-chart-title">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Net Savings Over Time
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="netSavingsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawal Status Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card analytics-chart-card">
+                <div class="card-header analytics-chart-header">
+                    <h6 class="analytics-chart-title">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Withdrawal Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="withdrawalStatusChart"></canvas>
+                    </div>
+                    <div class="chart-legend mt-3">
+                        <div class="legend-item">
+                            <span class="legend-color legend-pending"></span>
+                            <span class="legend-text">Pending ({{ pending_percentage }}%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color legend-approved"></span>
+                            <span class="legend-text">Approved ({{ processed_percentage }}%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color legend-rejected"></span>
+                            <span class="legend-text">Rejected ({{ rejected_percentage }}%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Metrics Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">{{ pending_requests_count }}</div>
+                            <div class="analytics-label">Pending Withdrawal Requests</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-growth">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">GH₵{{ net_growth|floatformat:2 }}</div>
+                            <div class="analytics-label">Net Platform Growth</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-transactions">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">{{ transaction_volume }}</div>
+                            <div class="analytics-label">Transaction Volume (This Month)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="card analytics-metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="analytics-icon analytics-icon-new-users">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="analytics-value">{{ new_users_this_month }}</div>
+                            <div class="analytics-label">New Users This Month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Section -->
+    {% if pending_requests %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-warning">Pending Transaction Requests</h6>
+            <a href="{% url 'transaction_requests' %}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in pending_requests|slice:":5" %}
+                        <tr>
+                            <td>{{ req.user.get_full_name|default:req.user.username }}</td>
+                            <td>
+                                <span class="badge {% if req.request_type == 'DEPOSIT' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ req.get_request_type_display }}
+                                </span>
+                            </td>
+                            <td>GH₵{{ req.amount|floatformat:2 }}</td>
+                            <td>{{ req.description|truncatechars:30|default:"-" }}</td>
+                            <td>{{ req.created_at|date:"M d, H:i" }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'process_request' req.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-check"></i> Process
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if pending_requests_count > 5 %}
+            <div class="text-center mt-3">
+                <a href="{% url 'transaction_requests' %}" class="btn btn-outline-primary">View All {{ pending_requests_count }} Pending Requests</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Transactions Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Recent Transactions</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in recent_transactions %}
+                        <tr>
+                            <td>{{ transaction.user.get_full_name|default:transaction.user.username }}</td>
+                            <td>
+                                <span class="badge {% if transaction.transaction_type == 'DEPOSIT' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ transaction.get_transaction_type_display }}
+                                </span>
+                            </td>
+                            <td>GH₵{{ transaction.amount|floatformat:2 }}</td>
+                            <td>{{ transaction.timestamp|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <span class="badge bg-info">Completed</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No transactions found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+   
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+     // Website color scheme
+    const colors = {
+        primary: '#2c3e50',
+        secondary: '#34495e',
+        secondaryLight: '#7f8c8d',
+        accent: '#27ae60',
+        accentSecondary: '#f39c12',
+        accentTertiary: '#8e44ad',
+        danger: '#e74c3c',
+        info: '#3498db',
+        success: '#27ae60',
+        warning: '#f39c12',
+        primaryLight: '#f8f9fa',
+        white: '#ffffff'
+    };
+
+  const gridColor = 'rgba(0,0,0,0.06)';
+  const tickColor = '#888780';
+  const ghcFmt = v => 'GH₵' + Number(v).toLocaleString();
+
+  // ── 1. Deposits vs Withdrawals bar chart ──────────────────────────────
+  const c1 = document.getElementById('depositsWithdrawalsChart');
+  if (c1) {
+    new Chart(c1, {
+      type: 'bar',
+      data: {
+        labels: [{% for label in comparison_labels %}'{{ label.month }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [
+          {
+            label: 'Deposits',
+            data: [{% for d in monthly_comparison %}{{ d.deposits }}{% if not forloop.last %},{% endif %}{% endfor %}],
+            backgroundColor: '#1D9E75',
+            borderRadius: 4,
+            borderSkipped: false
+          },
+          {
+            label: 'Withdrawals',
+            data: [{% for d in monthly_comparison %}{{ d.withdrawals }}{% if not forloop.last %},{% endif %}{% endfor %}],
+            backgroundColor: '#E24B4A',
+            borderRadius: 4,
+            borderSkipped: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: tickColor, font: { size: 11 } },
+            border: { display: false }
+          },
+          y: {
+            grid: { color: gridColor },
+            ticks: {
+              color: tickColor,
+              font: { size: 11 },
+              callback: v => 'GH₵' + (v / 1000).toFixed(0) + 'k'
+            },
+            border: { display: false },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  // ── 2. Transaction type doughnut chart ────────────────────────────────
+  const c2 = document.getElementById('transactionTypesChart');
+  if (c2) {
+    new Chart(c2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Deposits', 'Withdrawals'],
+        datasets: [{
+          data: [{{ deposit_count }}, {{ withdraw_count }}],
+          backgroundColor: ['#1D9E75', '#E24B4A'],
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '68%',
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
+  // ── 3. Net savings line chart ─────────────────────────────────────────
+  const c3 = document.getElementById('netSavingsChart');
+  if (c3) {
+    new Chart(c3, {
+      type: 'line',
+      data: {
+        labels: [{% for l in net_savings_labels %}'{{ l }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+          label: 'Cumulative net savings',
+          data: [{% for d in net_savings_data %}{{ d }}{% if not forloop.last %},{% endif %}{% endfor %}],
+          borderColor: '#1D9E75',
+          backgroundColor: 'rgba(29,158,117,0.08)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointBackgroundColor: '#1D9E75',
+          fill: true,
+          tension: 0.35
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: tickColor, font: { size: 11 } },
+            border: { display: false }
+          },
+          y: {
+            grid: { color: gridColor },
+            ticks: {
+              color: tickColor,
+              font: { size: 11 },
+              callback: v => 'GH₵' + (v / 1000).toFixed(0) + 'k'
+            },
+            border: { display: false },
+            beginAtZero: false
+          }
+        }
+      }
+    });
+  }
+
+  // ── 4. Transaction Status Pie Chart ────────────────────────────────────
+  const c4 = document.getElementById('withdrawalStatusChart');
+  if (c4) {
+    new Chart(c4, {
+      type: 'pie',
+      data: {
+        labels: ['Pending', 'Processed', 'Rejected'],
+        datasets: [{
+          data: [{{ pending_percentage }}, {{ processed_percentage }}, {{ rejected_percentage }}],
+          backgroundColor: ['#EF9F27', '#1D9E75', '#888780'],
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+</script>
+{% endblock %}

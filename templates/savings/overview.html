@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Savings Overview - Finance Savings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Savings Overview</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Current Balance</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="balance-display">GH₵{{ user.userprofile.balance|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Savings Goals Progress</h5>
+            </div>
+            <div class="card-body">
+                {% if goals %}
+                    {% for goal in goals %}
+                        <div class="mb-4">
+                            <h6>Goal: GH₵{{ goal.goal_amount|floatformat:2 }}</h6>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span><strong>GH₵{{ user.userprofile.balance|floatformat:2 }}</strong> / GH₵{{ goal.goal_amount|floatformat:2 }}</span>
+                                <span>{{ goal.progress_percentage|floatformat:1 }}%</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" style="width: {{ goal.progress_percentage }}%"></div>
+                            </div>
+                            <small class="text-muted">
+                                Deadline: {{ goal.deadline|date:"M d, Y" }} 
+                                {% if goal.is_completed %}<span class="badge bg-success">Completed!</span>{% endif %}
+                            </small>
+                            {% if not goal.is_completed and goal.progress_percentage >= 100 %}
+                                <div class="alert alert-success mt-2">
+                                    Congratulations! You've reached your savings goal!
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No savings goals set. <a href="{% url 'set_savings_goal' %}">Set one now!</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_transactions %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-{% if transaction.transaction_type == 'DEPOSIT' %}success{% else %}danger{% endif %}">
+                                                {{ transaction.get_transaction_type_display }}
+                                            </span>
+                                        </td>
+                                        <td class="{% if transaction.transaction_type == 'DEPOSIT' %}transaction-positive{% else %}transaction-negative{% endif %}">
+                                            {% if transaction.transaction_type == 'DEPOSIT' %}+{% endif %}GH₵{{ transaction.amount|floatformat:2 }}
+                                        </td>
+                                        <td>{{ transaction.timestamp|date:"M d, Y" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No recent activity.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

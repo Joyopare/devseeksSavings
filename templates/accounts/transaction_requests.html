@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Transaction Requests - Finance Savings{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Transaction Requests</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-sm btn-outline-secondary">Back to Dashboard</a>
+                <a href="{% url 'admin_notifications' %}" class="btn btn-sm btn-info position-relative">
+                    <i class="fas fa-bell me-1"></i> Notifications
+                    {% if unread_admin_notifications_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ unread_admin_notifications_count }}
+                        </span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="requestTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if request.GET.status == 'pending' or not request.GET.status %}active{% endif %}" 
+                            id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                        <i class="fas fa-clock me-2"></i>Pending ({{ pending_count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if request.GET.status == 'approved' %}active{% endif %}" 
+                            id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab">
+                        <i class="fas fa-check me-2"></i>Approved ({{ approved_count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if request.GET.status == 'rejected' %}active{% endif %}" 
+                            id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected" type="button" role="tab">
+                        <i class="fas fa-times me-2"></i>Rejected ({{ rejected_count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if request.GET.status == 'processed' %}active{% endif %}" 
+                            id="processed-tab" data-bs-toggle="tab" data-bs-target="#processed" type="button" role="tab">
+                        <i class="fas fa-cog me-2"></i>Processed ({{ processed_count }})
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="requestTabContent">
+        <!-- Pending Requests -->
+        <div class="tab-pane fade {% if request.GET.status == 'pending' or not request.GET.status %}show active{% endif %}" 
+             id="pending" role="tabpanel">
+            {% if pending_requests %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th>Current Balance</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in pending_requests %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2">
+                                            <i class="fas fa-user-circle fa-2x text-muted"></i>
+                                        </div>
+                                        <div>
+                                            <strong>{{ req.user.get_full_name|default:req.user.username }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ req.user.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge {% if req.request_type == 'DEPOSIT' %}bg-success{% else %}bg-danger{% endif %} fs-6">
+                                        <i class="fas {% if req.request_type == 'DEPOSIT' %}fa-arrow-down{% else %}fa-arrow-up{% endif %} me-1"></i>
+                                        {{ req.get_request_type_display }}
+                                    </span>
+                                </td>
+                                <td class="fw-bold">GH₵{{ req.amount|floatformat:2 }}</td>
+                                <td>{{ req.description|truncatechars:50|default:"-" }}</td>
+                                <td>
+                                    <span class="badge bg-info">GH₵{{ req.user.userprofile.balance|default:0|floatformat:2 }}</span>
+                                </td>
+                                <td>
+                                    <small>{{ req.created_at|date:"M d, Y H:i" }}</small>
+                                    <br>
+                                    <small class="text-muted">{{ req.created_at|timesince }} ago</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-success" 
+                                                data-bs-toggle="modal" data-bs-target="#approveModal{{ req.id }}">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                data-bs-toggle="modal" data-bs-target="#rejectModal{{ req.id }}">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Approve Modal -->
+                            <div class="modal fade" id="approveModal{{ req.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                Approve {{ req.get_request_type_display }} Request
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="alert alert-info">
+                                                <h6>Request Details:</h6>
+                                                <ul class="mb-0">
+                                                    <li><strong>User:</strong> {{ req.user.get_full_name|default:req.user.username }}</li>
+                                                    <li><strong>Type:</strong> {{ req.get_request_type_display }}</li>
+                                                    <li><strong>Amount:</strong> GH₵{{ req.amount|floatformat:2 }}</li>
+                                                    <li><strong>Current Balance:</strong> GH₵{{ req.user.userprofile.balance|default:0|floatformat:2 }}</li>
+                                                    {% if req.request_type == 'WITHDRAW' %}
+                                                        <li><strong>Balance After:</strong> GH₵{{ req.user.userprofile.balance|default:0|add:req.amount|floatformat:2 }}</li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                            <form method="post" action="{% url 'approve_request' req.id %}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="admin_notes_{{ req.id }}" class="form-label">Admin Notes (Optional)</label>
+                                                    <textarea class="form-control" id="admin_notes_{{ req.id }}" name="admin_notes" rows="3" 
+                                                              placeholder="Add any notes about this approval..."></textarea>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-success">
+                                                        <i class="fas fa-check me-1"></i> Confirm Approval
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Reject Modal -->
+                            <div class="modal fade" id="rejectModal{{ req.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                <i class="fas fa-times-circle text-danger me-2"></i>
+                                                Reject {{ req.get_request_type_display }} Request
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="alert alert-warning">
+                                                <h6>Request Details:</h6>
+                                                <ul class="mb-0">
+                                                    <li><strong>User:</strong> {{ req.user.get_full_name|default:req.user.username }}</li>
+                                                    <li><strong>Type:</strong> {{ req.get_request_type_display }}</li>
+                                                    <li><strong>Amount:</strong> GH₵{{ req.amount|floatformat:2 }}</li>
+                                                    <li><strong>Description:</strong> {{ req.description|default:"No description provided" }}</li>
+                                                </ul>
+                                            </div>
+                                            <form method="post" action="{% url 'reject_request' req.id %}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="rejection_reason_{{ req.id }}" class="form-label">Rejection Reason *</label>
+                                                    <textarea class="form-control" id="rejection_reason_{{ req.id }}" name="rejection_reason" rows="3" 
+                                                              placeholder="Please provide a reason for rejection..." required></textarea>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-times me-1"></i> Confirm Rejection
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                    <h5 class="text-success">No Pending Requests</h5>
+                    <p class="text-muted">All transaction requests have been processed.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Approved Requests -->
+        <div class="tab-pane fade {% if request.GET.status == 'approved' %}show active{% endif %}" 
+             id="approved" role="tabpanel">
+            {% include 'accounts/request_table.html' with requests=approved_requests status='approved' %}
+        </div>
+
+        <!-- Rejected Requests -->
+        <div class="tab-pane fade {% if request.GET.status == 'rejected' %}show active{% endif %}" 
+             id="rejected" role="tabpanel">
+            {% include 'accounts/request_table.html' with requests=rejected_requests status='rejected' %}
+        </div>
+
+        <!-- Processed Requests -->
+        <div class="tab-pane fade {% if request.GET.status == 'processed' %}show active{% endif %}" 
+             id="processed" role="tabpanel">
+            {% include 'accounts/request_table.html' with requests=processed_requests status='processed' %}
+        </div>
+    </div>
+</div>
+
+<style>
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-tabs .nav-link {
+    color: var(--secondary-medium);
+    border: 1px solid var(--primary-muted);
+}
+
+.nav-tabs .nav-link.active {
+    background: var(--accent-primary);
+    color: var(--primary-light);
+    border-color: var(--accent-primary);
+}
+
+.nav-tabs .nav-link:hover:not(.active) {
+    background: var(--primary-muted);
+    color: var(--secondary-dark);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--primary-base);
+}
+
+.modal-header {
+    background: var(--gradient-primary);
+    color: var(--primary-light);
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.btn-group .btn {
+    margin: 0 2px;
+}
+
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        margin: 2px 0;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+</style>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure modals are initialized (Bootstrap will normally handle this via data attributes,
+    // this is just a safety net for dynamic content).
+    if (typeof bootstrap === 'undefined' || !bootstrap.Modal) return;
+    document.querySelectorAll('.modal').forEach(function(modal) {
+        bootstrap.Modal.getOrCreateInstance(modal);
+    });
+});
+</script>
+{% endblock %}
+{% endblock content %}

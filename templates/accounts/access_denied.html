@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Denied - Finance Savings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+                    </div>
+                    <h2 class="card-title text-danger">Access Denied</h2>
+                    <p class="card-text">
+                        You don't have permission to access the admin dashboard. This area is restricted to administrators only.
+                    </p>
+                    <div class="mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>Go to Dashboard
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-secondary ms-2">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

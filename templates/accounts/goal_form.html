@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ title }} | Finance Savings{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bullseye me-2"></i>{{ title }} for {{ user.get_full_name|default:user.username }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.goal_amount.id_for_label }}" class="form-label">Goal Amount (GH₵)</label>
+                                    {{ form.goal_amount }}
+                                    {% if form.goal_amount.errors %}
+                                        <div class="text-danger">
+                                            {{ form.goal_amount.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.deadline.id_for_label }}" class="form-label">Deadline</label>
+                                    {{ form.deadline }}
+                                    {% if form.deadline.errors %}
+                                        <div class="text-danger">
+                                            {{ form.deadline.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6>User Information:</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</p>
+                                    <p><strong>Email:</strong> {{ user.email }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Current Balance:</strong> <span class="badge bg-success">GH₵{{ user.userprofile.balance|floatformat:2 }}</span></p>
+                                    {% if goal %}
+                                        <p><strong>Current Progress:</strong> 
+                                            <div class="progress mt-1" style="height: 15px;">
+                                                <div class="progress-bar {% if goal.progress_percentage >= 100 %}bg-success{% elif goal.progress_percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     role="progressbar" 
+                                                     style="width: {{ goal.progress_percentage }}%">
+                                                    {{ goal.progress_percentage|floatformat:1 }}%
+                                                </div>
+                                            </div>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'goal_management' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> {% if goal %}Update Goal{% else %}Create Goal{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

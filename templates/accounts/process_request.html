@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Process Transaction Request - Finance Savings{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Process Transaction Request</h3>
+            </div>
+            <div class="card-body">
+                <!-- Request Details -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Request Details</h5>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>User:</th>
+                                <td>{{ transaction_request.user.get_full_name|default:transaction_request.user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th>Type:</th>
+                                <td>
+                                    <span class="badge {% if transaction_request.request_type == 'DEPOSIT' %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ transaction_request.get_request_type_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Amount:</th>
+                                <td>GH₵{{ transaction_request.amount|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Description:</th>
+                                <td>{{ transaction_request.description|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Created:</th>
+                                <td>{{ transaction_request.created_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>User Balance</h5>
+                        <div class="alert alert-info">
+                            <strong>Current Balance:</strong> GH₵{{ transaction_request.user.userprofile.balance|default:0|floatformat:2 }}
+                        </div>
+                        {% if transaction_request.request_type == 'WITHDRAW' %}
+                            <div class="alert alert-warning">
+                                <strong>Balance After Withdrawal:</strong> GH₵{{ balance_after_withdrawal|floatformat:2 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Process Form -->
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'transaction_requests' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Process Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

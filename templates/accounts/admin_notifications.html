@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Notifications | Finance Savings{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-bell me-2"></i>Admin Notifications</h2>
+                <div>
+                    <a href="{% url 'send_message' %}" class="btn btn-outline-info me-2">
+                        <i class="fas fa-envelope me-1"></i> Send Message
+                    </a>
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            {% if notifications %}
+                <div class="row">
+                    {% for notification in notifications %}
+                        <div class="col-lg-6 col-xl-4 mb-4">
+                            <div class="card h-100 admin-notification-card {% if not notification.is_read %}notification-unread{% endif %}">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="notification-icon me-3">
+                                            {% if notification.notification_type == 'REQUEST' %}
+                                                <i class="fas fa-exchange-alt fa-2x text-primary"></i>
+                                            {% elif notification.notification_type == 'GOAL' %}
+                                                <i class="fas fa-bullseye fa-2x text-warning"></i>
+                                            {% elif notification.notification_type == 'SYSTEM' %}
+                                                <i class="fas fa-cog fa-2x text-info"></i>
+                                            {% else %}
+                                                <i class="fas fa-bell fa-2x text-secondary"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1">
+                                                {{ notification.title }}
+                                                {% if not notification.is_read %}
+                                                    <span class="badge bg-primary ms-2">New</span>
+                                                {% endif %}
+                                            </h6>
+                                            <p class="card-text text-muted small mb-2">
+                                                <i class="fas fa-clock me-1"></i>
+                                                {{ notification.created_at|date:"M d, Y H:i" }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="notification-content mb-3">
+                                        <p class="card-text">{{ notification.message }}</p>
+                                    </div>
+                                    
+                                    {% if notification.related_request %}
+                                        <div class="notification-related mb-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-exchange-alt me-1"></i>
+                                                Related Request: {{ notification.related_request.request_type }}
+                                                <span class="badge bg-secondary ms-1">{{ notification.related_request.get_status_display }}</span>
+                                            </small>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if notification.related_goal %}
+                                        <div class="notification-related mb-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-bullseye me-1"></i>
+                                                Related Goal: GH₵{{ notification.related_goal.goal_amount|floatformat:2 }}
+                                                {% if notification.related_goal.is_completed %}
+                                                    <span class="badge bg-success ms-1">Completed</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning ms-1">In Progress</span>
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="notification-actions mt-3">
+                                        <button class="btn btn-sm btn-outline-secondary mark-read-btn" data-notification-id="{{ notification.id }}">
+                                            <i class="fas fa-check me-1"></i>
+                                            Mark as Read
+                                        </button>
+                                        {% if notification.related_request %}
+                                            <a href="{% url 'process_request' notification.related_request.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i>
+                                                View Request
+                                            </a>
+                                        {% endif %}
+                                        {% if notification.related_goal %}
+                                            <a href="{% url 'goal_management' %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-tasks me-1"></i>
+                                                Manage Goals
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Notifications</h5>
+                        <p class="text-muted mb-4">You have no notifications at this time.</p>
+                        <div>
+                            <a href="{% url 'transaction_requests' %}" class="btn btn-primary me-2">
+                                <i class="fas fa-list me-1"></i> View Requests
+                            </a>
+                            <a href="{% url 'send_message' %}" class="btn btn-info">
+                                <i class="fas fa-envelope me-1"></i> Send Message
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-notification-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.admin-notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.notification-unread {
+    border-left-color: var(--accent-primary);
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(255, 255, 255, 1));
+}
+
+.notification-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.notification-content {
+    border-left: 3px solid var(--accent-secondary);
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+}
+
+.notification-related {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid var(--accent-secondary);
+}
+
+.notification-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    padding: 3rem 1rem;
+}
+
+@media (max-width: 768px) {
+    .notification-actions {
+        justify-content: center;
+    }
+    
+    .admin-notification-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mark as read functionality
+    const markReadButtons = document.querySelectorAll('.mark-read-btn');
+    
+    markReadButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const notificationId = this.dataset.notificationId;
+            const card = this.closest('.admin-notification-card');
+            
+            // Remove unread styling
+            card.classList.remove('notification-unread');
+            card.style.borderLeftColor = 'transparent';
+            
+            // Remove "New" badge if it exists
+            const newBadge = card.querySelector('.badge.bg-primary');
+            if (newBadge && newBadge.textContent === 'New') {
+                newBadge.remove();
+            }
+            
+            // Disable button and change text
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-check me-1"></i> Marked as Read';
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('btn-success');
+            
+            // Here you could also make an AJAX call to update the backend
+            fetch(`/mark-admin-notification-read/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Admin notification marked as read:', data);
+            })
+            .catch(error => {
+                console.error('Error marking admin notification as read:', error);
+            });
+        });
+    });
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}
