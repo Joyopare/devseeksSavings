@@ -1,9 +1,11 @@
 {
+  "buildCommand": "python manage.py collectstatic --noinput",
+  "outputDirectory": "staticfiles",
+  "framework": null,
   "builds": [
     {
       "src": "finance_savings/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "20mb", "runtime": "python3.10" }
+      "use": "@vercel/python"
     }
   ],
   "routes": [
