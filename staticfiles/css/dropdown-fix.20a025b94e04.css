@@ -1,0 +1,19 @@
+/* Dropdown Fix - Reduced z-index to prevent overlay issues */
+.dropdown-menu {
+    z-index: 1050 !important; /* Bootstrap default is 1000 */
+}
+
+/* Ensure proper layering for dashboard elements */
+main, .card, .btn, .table, .alert, .progress, .balance-display, .jumbotron {
+    position: relative;
+    z-index: 1;
+}
+
+/* Fix modal backdrop z-index conflicts */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1055 !important;
+}
